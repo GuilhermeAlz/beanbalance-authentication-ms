@@ -1,0 +1,39 @@
+@AuthMicroservice_HostAddress = http://localhost:5090
+
+### Registrar novo usuário
+POST {{AuthMicroservice_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "guilherme",
+  "email": "guilherme@email.com",
+  "password": "123456"
+}
+
+### Login
+POST {{AuthMicroservice_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "guilherme@email.com",
+  "password": "123456"
+}
+
+### Obter usuário autenticado (substituir <TOKEN> pelo JWT retornado)
+GET {{AuthMicroservice_HostAddress}}/api/auth/me
+Authorization: Bearer <TOKEN>
+
+### Refresh token
+POST {{AuthMicroservice_HostAddress}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "accessToken": "<ACCESS_TOKEN>",
+  "refreshToken": "<REFRESH_TOKEN>"
+}
+
+### Revogar token (requer autenticação)
+POST {{AuthMicroservice_HostAddress}}/api/auth/revoke
+Authorization: Bearer <TOKEN>
+
+###
