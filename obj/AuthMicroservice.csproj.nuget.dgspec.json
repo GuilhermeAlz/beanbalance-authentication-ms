@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/guilhermecamelo/Documents/opus/APITeste/AuthMicroservice.csproj": {}
+    "/home/guilhermecamelo/Documents/opus/beanbalance-authentication-ms/AuthMicroservice.csproj": {}
   },
   "projects": {
-    "/home/guilhermecamelo/Documents/opus/APITeste/AuthMicroservice.csproj": {
+    "/home/guilhermecamelo/Documents/opus/beanbalance-authentication-ms/AuthMicroservice.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/guilhermecamelo/Documents/opus/APITeste/AuthMicroservice.csproj",
+        "projectUniqueName": "/home/guilhermecamelo/Documents/opus/beanbalance-authentication-ms/AuthMicroservice.csproj",
         "projectName": "AuthMicroservice",
-        "projectPath": "/home/guilhermecamelo/Documents/opus/APITeste/AuthMicroservice.csproj",
+        "projectPath": "/home/guilhermecamelo/Documents/opus/beanbalance-authentication-ms/AuthMicroservice.csproj",
         "packagesPath": "/home/guilhermecamelo/.nuget/packages/",
-        "outputPath": "/home/guilhermecamelo/Documents/opus/APITeste/obj/",
+        "outputPath": "/home/guilhermecamelo/Documents/opus/beanbalance-authentication-ms/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/guilhermecamelo/.nuget/NuGet/NuGet.Config"

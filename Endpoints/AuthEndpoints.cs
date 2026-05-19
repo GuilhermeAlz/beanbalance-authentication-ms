@@ -35,6 +35,7 @@ public static class AuthEndpoints
             }
         })
         .WithName("Register")
+        .RequireRateLimiting("auth")
         .AllowAnonymous();
 
         group.MapPost("/login", async (LoginRequest request, IAuthService authService) =>
@@ -50,6 +51,7 @@ public static class AuthEndpoints
             }
         })
         .WithName("Login")
+        .RequireRateLimiting("auth")
         .AllowAnonymous();
 
         group.MapPost("/refresh", async (RefreshTokenRequest request, IAuthService authService) =>

@@ -3,6 +3,8 @@ using AuthMicroservice.DTOs;
 using AuthMicroservice.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace AuthMicroservice.Services;
 
@@ -19,6 +21,12 @@ public class AuthService : IAuthService
         _config = config;
     }
 
+    private static string HashToken(string token)
+    {
+        var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
+        return Convert.ToHexString(bytes).ToLowerInvariant();
+    }
+
     public async Task<AuthResponse> RegisterAsync(RegisterRequest request)
     {
         if (await _context.Users.AnyAsync(u => u.Email == request.Email))
@@ -27,12 +35,13 @@ public class AuthService : IAuthService
         if (await _context.Users.AnyAsync(u => u.Username == request.Username))
             throw new InvalidOperationException("Username já cadastrado");
 
+        var rawRefreshToken = _tokenService.GenerateRefreshToken();
         var user = new User
         {
             Username = request.Username,
             Email = request.Email,
             PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
-            RefreshToken = _tokenService.GenerateRefreshToken(),
+            RefreshToken = HashToken(rawRefreshToken),
             RefreshTokenExpiry = DateTime.UtcNow.AddDays(7)
         };
 
@@ -46,7 +55,7 @@ public class AuthService : IAuthService
 
         return new AuthResponse(
             accessToken,
-            user.RefreshToken,
+            rawRefreshToken,
             expiration,
             user.Username,
             user.Role
@@ -62,7 +71,8 @@ public class AuthService : IAuthService
             throw new UnauthorizedAccessException("Credenciais inválidas");
 
         var accessToken = _tokenService.GenerateAccessToken(user);
-        user.RefreshToken = _tokenService.GenerateRefreshToken();
+        var rawRefreshToken = _tokenService.GenerateRefreshToken();
+        user.RefreshToken = HashToken(rawRefreshToken);
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
 
         await _context.SaveChangesAsync();
@@ -72,7 +82,7 @@ public class AuthService : IAuthService
 
         return new AuthResponse(
             accessToken,
-            user.RefreshToken,
+            rawRefreshToken,
             expiration,
             user.Username,
             user.Role
@@ -87,12 +97,13 @@ public class AuthService : IAuthService
 
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
-        if (user is null || user.RefreshToken != request.RefreshToken
+        if (user is null || user.RefreshToken != HashToken(request.RefreshToken)
             || user.RefreshTokenExpiry <= DateTime.UtcNow)
             throw new UnauthorizedAccessException("Refresh token inválido ou expirado");
 
         var newAccessToken = _tokenService.GenerateAccessToken(user);
-        user.RefreshToken = _tokenService.GenerateRefreshToken();
+        var newRawRefreshToken = _tokenService.GenerateRefreshToken();
+        user.RefreshToken = HashToken(newRawRefreshToken);
         user.RefreshTokenExpiry = DateTime.UtcNow.AddDays(7);
         await _context.SaveChangesAsync();
 
@@ -101,7 +112,7 @@ public class AuthService : IAuthService
 
         return new AuthResponse(
             newAccessToken,
-            user.RefreshToken,
+            newRawRefreshToken,
             expiration,
             user.Username,
             user.Role
